@@ -1,0 +1,5 @@
+﻿Content/SlimeBlob.png - created by ZomBCool of OpenGameArt.org (https://opengameart.org/sites/default/files/blob_2_1.png) and released under the public domain
+
+Content/SlimeBlobTall.png - created by me stretching out the SlimeBlob texture created by ZomBCool of OpenGameArt.org
+
+Content/coins.png - created by puddin of OpenGameArt.org (https://opengameart.org/content/rotating-coin) and released under the public domain
