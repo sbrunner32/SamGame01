@@ -32,6 +32,18 @@
 /processorParam:TextureFormat=Color
 /build:coins.png
 
+#begin I_Can_Tell.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:I_Can_Tell.mp3
+
+#begin ICanTellWav.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:ICanTellWav.wav
+
 #begin SlimeBlob.png
 /importer:TextureImporter
 /processor:TextureProcessor

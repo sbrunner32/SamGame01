@@ -26,10 +26,46 @@ namespace SamGame01
 
         private BoundingCircle bounds;
 
+        private Vector2 velocity;
+
+        private float windowWidth;
+
+        private float windowHeight;
+
         /// <summary>
         /// Bool representing if the coin has been collected or not
         /// </summary>
         public bool Collected { get; set; } = false;
+
+        /// <summary>
+        /// Public getter for the position value for the game to use
+        /// </summary>
+        public Vector2 Position { 
+            get
+            {
+                return position;
+            }
+            set
+            {
+                position = value;
+                bounds.Center = position - new Vector2(-8, -8);
+            }
+        }
+
+        /// <summary>
+        /// Public getter for the coin's velocity
+        /// </summary>
+        public Vector2 Velocity
+        {
+            get
+            {
+                return velocity;
+            }
+            set
+            {
+                velocity = value;
+            }
+        }
 
         /// <summary>
         /// The bounding volume of the sprite
@@ -40,10 +76,13 @@ namespace SamGame01
         /// Creates a new coin sprite
         /// </summary>
         /// <param name="position">The position of the sprite in the game</param>
-        public CoinSprite(Vector2 position)
+        public CoinSprite(Vector2 position, float width, float height)
         {
             this.position = position;
             this.bounds = new BoundingCircle(position - new Vector2(-8, -8), 8);
+            velocity = new Vector2(10, 0);
+            windowWidth = width;
+            windowHeight = height;
         }
 
         /// <summary>
@@ -55,12 +94,32 @@ namespace SamGame01
             texture = content.Load<Texture2D>("coins");
         }
 
-        /// <summary>
-        /// Draws the animated sprite using the supplied SpriteBatch
-        /// </summary>
-        /// <param name="gameTime">The game time</param>
-        /// <param name="spriteBatch">The spritebatch to render with</param>
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+
+        ///Code to add the update feature to the CoinSprite itself. Non-functional
+        /***
+        public void Update(GameTime gameTime)
+        {
+            bool outOfBounds = false;
+            bool addCoin = false;
+
+            float t = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Vector2 acceleration = new Vector2(0, 30);
+            velocity += acceleration * t;
+            position += t * velocity;
+            if(outOfBounds)
+            {
+                this.Warp(windowWidth, windowHeight);
+            }
+            outOfBounds = true;
+        }
+        ***/
+
+            /// <summary>
+            /// Draws the animated sprite using the supplied SpriteBatch
+            /// </summary>
+            /// <param name="gameTime">The game time</param>
+            /// <param name="spriteBatch">The spritebatch to render with</param>
+            public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             if (Collected) return;
             animationTimer += gameTime.ElapsedGameTime.TotalSeconds;

@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 
 namespace SamGame01
 {
@@ -20,6 +22,13 @@ namespace SamGame01
         private SpriteFont spriteFont;
         private int coinsCount;
 
+        private int width;
+        private int height;
+
+        private SoundEffect coinPickup;
+        private string coinSoundName = "ICanTellWav";
+
+
         /// <summary>
         /// Constructor for our game 
         /// </summary>
@@ -37,9 +46,11 @@ namespace SamGame01
         {
             // TODO: Add your initialization logic here
             System.Random rand = new System.Random();
-            Window.Title = "Coins Quest";
+            Window.Title = "Coins Quest 2";
             coinsList = new List<CoinSprite>();
-            CoinSprite temp = new CoinSprite(new Vector2((float)rand.NextDouble() * GraphicsDevice.Viewport.Width, (float)rand.NextDouble() * GraphicsDevice.Viewport.Height));
+            width = GraphicsDevice.Viewport.Width;
+            height = GraphicsDevice.Viewport.Height;
+            CoinSprite temp = new CoinSprite(new Vector2((float)rand.NextDouble() * width, (float)rand.NextDouble() * height), width, height);
             coinsList.Add(temp);           
           
             coinsCount = 0;
@@ -59,6 +70,7 @@ namespace SamGame01
             foreach (var coin in coinsList) coin.LoadContent(Content);
             slimeSprite.LoadContent(Content);
             spriteFont = Content.Load<SpriteFont>("arial");
+            coinPickup = Content.Load<SoundEffect>(coinSoundName);
         }
 
         /// <summary>
@@ -69,10 +81,12 @@ namespace SamGame01
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+            
             System.Random rand = new System.Random();
             // TODO: Add your update logic here
             slimeSprite.Update(gameTime);
+            float t = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Vector2 acceleration = new Vector2(0, 30);
             bool addCoin = false;
             foreach (var coin in coinsList)
             {
@@ -82,13 +96,37 @@ namespace SamGame01
                     addCoin = true;                    
                     coinsCount++;
                     coin.Collected = true;
-                    coin.Warp(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);                    
+                    coin.Warp(width, height);
+                    coinPickup.Play();
+                }
+                /// If the coin goes beneath the game window
+                if (coin.Position.Y > height)
+                {
+                    Vector2 temp = new Vector2(coin.Position.X, 0);
+                    coin.Position = temp;
+                }
+                /// If the coin goes past the right boundary
+                if (coin.Position.X > width)
+                {
+                    Vector2 temp = new Vector2(0, coin.Position.Y);
+                    coin.Position = temp;
+                }
+                coin.Velocity += acceleration * t;
+                coin.Position += t * coin.Velocity;
+                /// Check to see if the player has gotten enough coins to win 
+                if(coinsCount> 9)
+                {
+                    this.Exit();
                 }
             }
             ///Adds a coin randomly in the game window
             if(addCoin)
             {
-                CoinSprite tempCoin = new CoinSprite(new Vector2((float)rand.NextDouble() * GraphicsDevice.Viewport.Width, (float)rand.NextDouble() * GraphicsDevice.Viewport.Height));
+                CoinSprite tempCoin = new CoinSprite(
+                    new Vector2((float)rand.NextDouble() * width, 
+                    (float)rand.NextDouble() * height), 
+                    width, 
+                    height);
                 tempCoin.LoadContent(Content);
                 coinsList.Add(tempCoin);
             }
@@ -114,6 +152,10 @@ namespace SamGame01
 
             slimeSprite.Draw(gameTime, spriteBatch);
             spriteBatch.DrawString(spriteFont, $"Coin Count: {coinsCount}", new Vector2(2, 2), Color.Gold);
+            if(coinsCount< 4)
+            {
+                spriteBatch.DrawString(spriteFont, $"Collect 10 Coins to Win", new Vector2(420, 2), Color.Gold);
+            }
             spriteBatch.End();
 
 
